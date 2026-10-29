@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional workstation</title>
+    <style>
+        :root {
+            --bg-dark: #000000;
+            --card-bg: rgba(6, 6, 10, 0.35);
+            --card-hover: rgba(12, 12, 18, 0.55);
+            --gold-primary: #f5c518;
+            --gold-glow: rgba(245, 197, 24, 0.4);
+            --cyan-accent: #00f0ff;
+            --cyan-glow: rgba(0, 240, 255, 0.4);
+            --text-main: #ffffff;
+            --text-muted: #c0c0d0;
+            --border-color: rgba(245, 197, 24, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 180vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 1.5rem;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Fixed Fullscreen Background Video */
+        .bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            z-index: -2;
+        }
+
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.6) 85%, #000000 100%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Simplified Header Bar */
+        .header-bar {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(5, 5, 8, 0.25);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 12px;
+            padding: 0.8rem 1.5rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .header-title {
+            font-size: 1.2rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: var(--gold-primary);
+            text-transform: uppercase;
+            text-shadow: 0 0 10px var(--gold-glow);
+        }
+
+        /* Audio Mute/Unmute Button Styling */
+        .audio-btn {
+            background: rgba(245, 197, 24, 0.1);
+            border: 1px solid var(--border-color);
+            color: var(--gold-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .audio-btn:hover {
+            background: rgba(245, 197, 24, 0.25);
+            box-shadow: 0 0 12px var(--gold-glow);
+            transform: scale(1.03);
+        }
+
+        /* Maximized Open Video Viewport Space */
+        .video-view-space {
+            height: 70vh;
+            width: 100%;
+        }
+
+        /* Quick Links Dock */
+        .quick-dock {
+            width: 100%;
+            max-width: 1200px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 1.2rem;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            margin-bottom: 3rem;
+        }
+
+        .dock-header {
+            font-size: 0.9rem;
+            font-weight: 900;
+            color: var(--gold-primary);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pulse-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--cyan-accent);
+            box-shadow: 0 0 8px var(--cyan-accent);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.7); }
+            70% { transform: scale(1.3); box-shadow: 0 0 0 6px rgba(0, 240, 255, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 240, 255, 0); }
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .link-btn {
+            padding: 0.85rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            text-decoration: none;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .link-btn:hover {
+            background: rgba(245, 197, 24, 0.2);
+            border-color: var(--gold-primary);
+            color: var(--gold-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--gold-glow);
+        }
+
+        /* LeetCode Timer Engine */
+        .leetcode-bottom-card {
+            width: 100%;
+            max-width: 1200px;
+            background: rgba(8, 8, 12, 0.65);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 1.5rem;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.8);
+            margin-bottom: 2rem;
+        }
+
+        .timer-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .timer-display {
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #ffffff;
+            text-shadow: 0 0 12px var(--cyan-glow);
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .graph-container {
+            width: 100%;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(245, 197, 24, 0.2);
+            padding: 0.4rem;
+        }
+
+        canvas {
+            width: 100%;
+            height: 120px;
+            display: block;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.85rem;
+            background: linear-gradient(135deg, var(--gold-primary) 0%, #b88e00 100%);
+            color: #050508;
+            font-weight: 900;
+            text-align: center;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(245, 197, 24, 0.3);
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            filter: brightness(1.2);
+            box-shadow: 0 6px 20px var(--gold-glow);
+        }
+
+        .btn-secondary {
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--cyan-accent);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 240, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 240, 255, 0.22);
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BACKGROUND VIDEO & OVERLAY -->
+    <video autoplay muted loop class="bg-video">
+        <source src="mil.mp4" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
+
+    <!-- BACKGROUND AUDIO LOOP ("m") -->
+    <audio id="bg-audio" autoplay loop muted>
+        <source src="m" type="audio/mp3">
+        <source src="m.mp3" type="audio/mp3">
+        <source src="m.wav" type="audio/wav">
+    </audio>
+
+    <!-- CLEARED HEADER BAR -->
+    <div class="header-bar">
+        <div class="header-title">Professional workstation</div>
+        <!-- Audio Mute / Unmute Toggle Button -->
+        <button class="audio-btn" id="audio-toggle-btn" onclick="toggleAudio()">
+            🔇
+        </button>
+    </div>
+
+    <!-- OPEN SPACE (UNOBSTRUCTED VIDEO VIEW) -->
+    <div class="video-view-space"></div>
+
+    <!-- QUICK LINKS DOCK (BOTTOM OF PAGE) -->
+    <div class="quick-dock">
+        <div class="dock-header">
+            <span class="pulse-dot"></span> Command & Navigation Hub
+        </div>
+        <div class="links-grid">
+            <a href="https://google.com" target="_blank" class="link-btn" style="border-color: rgba(66, 133, 244, 0.4); color: #4285f4;">Google</a>
+            <a href="https://gemini.google.com" target="_blank" class="link-btn">Gemini AI</a>
+            <a href="https://chatgpt.com" target="_blank" class="link-btn">ChatGPT</a>
+            <a href="https://youtube.com" target="_blank" class="link-btn" style="border-color: rgba(255,0,0,0.4); color: #ff4d4d;">YouTube</a>
+            <a href="https://github.com" target="_blank" class="link-btn">GitHub</a>
+            <a href="https://discord.com/app" target="_blank" class="link-btn">Discord</a>
+            <a href="https://web.whatsapp.com" target="_blank" class="link-btn">WhatsApp</a>
+            <a href="https://mail.google.com" target="_blank" class="link-btn">Gmail</a>
+        </div>
+    </div>
+
+    <!-- LEETCODE TIMER ENGINE -->
+    <div class="leetcode-bottom-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+            <div class="dock-header" style="margin-bottom: 0;">LeetCode Focus Engine</div>
+            <span style="font-size: 0.75rem; padding: 0.25rem 0.6rem; border-radius: 20px; background: rgba(245, 197, 24, 0.15); color: var(--gold-primary); border: 1px solid var(--border-color); font-weight: 800;" id="session-status">STANDBY</span>
+        </div>
+
+        <div class="timer-row">
+            <div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Focus Stopwatch</div>
+                <div class="timer-display" id="leetcode-timer">00:00:00</div>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Momentum Score</div>
+                <div style="font-size: 1.6rem; font-weight: 900; color: var(--gold-primary);" id="momentum-score">0 PTS</div>
+            </div>
+        </div>
+
+        <div class="graph-container">
+            <canvas id="liveGraph"></canvas>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn" id="toggle-btn">Start Session</button>
+            <a href="https://leetcode.com/problemset/all/" target="_blank" class="btn btn-secondary">Launch LeetCode ↗</a>
+        </div>
+    </div>
+
+    <script>
+        // --- AUDIO MUTE / UNMUTE TOGGLE ---
+        const audioEl = document.getElementById('bg-audio');
+        const audioBtn = document.getElementById('audio-toggle-btn');
+
+        function toggleAudio() {
+            if (audioEl.muted) {
+                audioEl.muted = false;
+                audioEl.play().catch(e => console.log("Audio play blocked:", e));
+                audioBtn.innerHTML = "🔊";
+                audioBtn.style.background = "rgba(0, 240, 255, 0.2)";
+                audioBtn.style.color = "#00f0ff";
+                audioBtn.style.borderColor = "#00f0ff";
+            } else {
+                audioEl.muted = true;
+                audioBtn.innerHTML = "🔇";
+                audioBtn.style.background = "rgba(245, 197, 24, 0.1)";
+                audioBtn.style.color = "#f5c518";
+                audioBtn.style.borderColor = "rgba(245, 197, 24, 0.3)";
+            }
+        }
+
+        // --- REAL-TIME GRAPH & TIMER ENGINE ---
+        let secondsSpent = 0;
+        let timerInterval = null;
+        let isRunning = false;
+        let graphData = [15, 22, 18, 30, 42, 38, 55, 62, 58, 75, 82];
+
+        const timerDisplay = document.getElementById('leetcode-timer');
+        const statusBadge = document.getElementById('session-status');
+        const toggleBtn = document.getElementById('toggle-btn');
+        const momentumDisplay = document.getElementById('momentum-score');
+        const canvas = document.getElementById('liveGraph');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth * window.devicePixelRatio;
+            canvas.height = canvas.offsetHeight * window.devicePixelRatio;
+            drawGraph();
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        function formatTime(totalSec) {
+            const hrs = Math.floor(totalSec / 3600).toString().padStart(2, '0');
+            const mins = Math.floor((totalSec % 3600) / 60).toString().padStart(2, '0');
+            const secs = (totalSec % 60).toString().padStart(2, '0');
+            return `${hrs}:${mins}:${secs}`;
+        }
+
+        toggleBtn.addEventListener('click', function() {
+            if (!isRunning) {
+                isRunning = true;
+                statusBadge.innerText = "ACTIVE FOCUS";
+                statusBadge.style.color = "#00f0ff";
+                statusBadge.style.borderColor = "#00f0ff";
+                toggleBtn.innerText = "Pause Session";
+                toggleBtn.style.background = "linear-gradient(135deg, #e63946 0%, #900c3f 100%)";
+
+                timerInterval = setInterval(() => {
+                    secondsSpent++;
+                    timerDisplay.innerText = formatTime(secondsSpent);
+                    momentumDisplay.innerText = `${Math.floor(secondsSpent * 2.5)} PTS`;
+
+                    const lastVal = graphData[graphData.length - 1];
+                    const change = Math.floor(Math.random() * 10) - 2; 
+                    let newVal = Math.max(10, Math.min(100, lastVal + change));
+                    graphData.push(newVal);
+
+                    if (graphData.length > 30) {
+                        graphData.shift();
+                    }
+
+                    drawGraph();
+                }, 1000);
+
+            } else {
+                isRunning = false;
+                statusBadge.innerText = "PAUSED";
+                statusBadge.style.color = "#f5c518";
+                statusBadge.style.borderColor = "rgba(245, 197, 24, 0.3)";
+                toggleBtn.innerText = "Resume Session";
+                toggleBtn.style.background = "linear-gradient(135deg, #f5c518 0%, #b88e00 100%)";
+                clearInterval(timerInterval);
+            }
+        });
+
+        function drawGraph() {
+            const width = canvas.width;
+            const height = canvas.height;
+            ctx.clearRect(0, 0, width, height);
+
+            if (graphData.length < 2) return;
+
+            const maxVal = Math.max(...graphData, 100);
+            const minVal = 0;
+
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
+            ctx.lineWidth = 1;
+            for (let i = 1; i <= 3; i++) {
+                ctx.beginPath();
+                ctx.moveTo(0, (height / 4) * i);
+                ctx.lineTo(width, (height / 4) * i);
+                ctx.stroke();
+            }
+
+            ctx.beginPath();
+            ctx.strokeStyle = "#f5c518";
+            ctx.lineWidth = 3;
+            ctx.shadowColor = "#f5c518";
+            ctx.shadowBlur = 10;
+
+            const step = width / (graphData.length - 1);
+
+            for (let i = 0; i < graphData.length; i++) {
+                const x = i * step;
+                const normalized = (graphData[i] - minVal) / (maxVal - minVal);
+                const y = height - (normalized * (height - 20) + 10);
+
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            const gradient = ctx.createLinearGradient(0, 0, 0, height);
+            gradient.addColorStop(0, 'rgba(245, 197, 24, 0.45)');
+            gradient.addColorStop(0.8, 'rgba(0, 240, 255, 0.1)');
+            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+            ctx.lineTo((graphData.length - 1) * step, height);
+            ctx.lineTo(0, height);
+            ctx.fillStyle = gradient;
+            ctx.fill();
+
+            const lastIdx = graphData.length - 1;
+            const lastX = lastIdx * step;
+            const lastNorm = (graphData[lastIdx] - minVal) / (maxVal - minVal);
+            const lastY = height - (lastNorm * (height - 20) + 10);
+
+            ctx.beginPath();
+            ctx.arc(lastX, lastY, 5, 0, Math.PI * 2);
+            ctx.fillStyle = "#00f0ff";
+            ctx.shadowColor = "#00f0ff";
+            ctx.shadowBlur = 12;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+
+        setTimeout(resizeCanvas, 100);
+    </script>
+
+</body>
+</html>
